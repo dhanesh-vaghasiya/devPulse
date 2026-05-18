@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>WebSocket Monitor</h1>
+
+<script>
+    const ws = new WebSocket("ws://127.0.0.1:8000/ws");
+
+    ws.onmessage = (event) => {
+        console.log(JSON.parse(event.data));
+    };
+</script>
+
+</body>
+</html>
