@@ -8,11 +8,7 @@ from database import Base, engine
 from routes.monitor import router
 from services.monitor import monitor_services
 
-
-# Create tables
-Base.metadata.create_all(bind=engine)
-
-
+    
 @asynccontextmanager
 async def lifespan(app: FastAPI):
 

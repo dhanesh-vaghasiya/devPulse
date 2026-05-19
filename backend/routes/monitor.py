@@ -38,6 +38,8 @@ async def add_service(
     db: Session = Depends(get_db)
 ):
 
+    from services.validator import validate_service_url
+
     # check duplicate
     existing = db.query(Service).filter(
         Service.url == str(data.url)
@@ -47,6 +49,16 @@ async def add_service(
         raise HTTPException(
             status_code=400,
             detail="URL already exists"
+        )
+
+    validation = await validate_service_url(
+        str(data.url)
+    )
+
+    if not validation["valid"]:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid or unreachable URL: {validation['error']}"
         )
 
     service = Service(
