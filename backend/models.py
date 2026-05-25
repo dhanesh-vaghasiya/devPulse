@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, Float, ForeignKey, DateTime
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from database import Base
 
 class Service(Base):
@@ -12,7 +13,7 @@ class Service(Base):
     last_status_code = Column(Integer, nullable=True)
     failure_count = Column(Integer, default=0)
     last_checked = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(ZoneInfo("Asia/Kolkata")), index=True)
 
 class Log(Base):
     __tablename__ = "logs"
@@ -22,11 +23,11 @@ class Log(Base):
     latency = Column(Float, nullable=True)
     success = Column(Boolean)
     error = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(ZoneInfo("Asia/Kolkata")), index=True)
 
 class Alert(Base):
     __tablename__ = "alerts"
     id = Column(Integer, primary_key=True)
     service_id = Column(Integer, ForeignKey("services.id"))
     message = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(ZoneInfo("Asia/Kolkata")), index=True)

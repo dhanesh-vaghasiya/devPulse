@@ -1,7 +1,8 @@
 import asyncio
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from sqlalchemy.orm import Session
-
+from services.cleanup import cleanup_old_logs
 from database import SessionLocal
 from models import Alert, Service, Log
 from services.checker import check_url
@@ -31,7 +32,7 @@ async def check_and_store(service, db):
             alert = Alert(
                 service_id=service.id,
                 message=f"{service.url} is DOWN",
-                created_at=datetime.utcnow()
+                created_at=datetime.now(ZoneInfo("Asia/Kolkata"))
             )
             db.add(alert)
             # ALERT EVENT
@@ -44,7 +45,7 @@ async def check_and_store(service, db):
     # ---------- UPDATE CURRENT STATE ---------- #
     service.last_latency = result.get("latency")
     service.last_status_code = result.get("status_code")
-    service.last_checked = datetime.utcnow()
+    service.last_checked = datetime.now(ZoneInfo("Asia/Kolkata"))
     db.add(log)
 
     # ---------- REGULAR STATUS UPDATE ---------- #
@@ -59,6 +60,7 @@ async def check_and_store(service, db):
     })
 
 async def monitor_services():
+    cleanup_counter = 0
     while True:
         db: Session = SessionLocal()
         try:
@@ -74,4 +76,12 @@ async def monitor_services():
             print("Monitor Error:", e)
         finally:
             db.close()
+
+
+        cleanup_counter += 1
+        if cleanup_counter >= 120:  # every 1 hour (120 * 30 sec)
+            await cleanup_old_logs()
+            cleanup_counter = 0
+
+        
         await asyncio.sleep(30)

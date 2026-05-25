@@ -1,5 +1,6 @@
 # routes/monitor.py
 
+from zoneinfo import ZoneInfo
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, HttpUrl
 from sqlalchemy.orm import Session
@@ -89,90 +90,12 @@ async def get_services(
 
     return services
 
-
-# Check service manually
-@router.post("/services/{service_id}/check")
-async def check_service(
-    service_id: int,
-    db: Session = Depends(get_db)
-):
-
-    # find service
-    service = db.query(Service).filter(
-        Service.id == service_id
-    ).first()
-
-    if not service:
-        raise HTTPException(
-            status_code=404,
-            detail="Service not found"
-        )
-
-    # check URL
-    result = await check_url(service.url)
-
-    # save monitoring log
-    log = Log(
-        service_id=service.id,
-        status_code=result.get("status_code"),
-        latency=result.get("latency"),
-        success=result.get("success"),
-        error=result.get("error")
-    )
-
-    db.add(log)
-    db.commit()
-
-    return {
-        "service": service.url,
-        "result": result
-    }
-
-
-# Get logs for a service
-@router.get("/services/{service_id}/logs")
-async def get_logs(
-    service_id: int,
-    db: Session = Depends(get_db)
-):
-
-    service = db.query(Service).filter(
-        Service.id == service_id
-    ).first()
-
-    if not service:
-        raise HTTPException(
-            status_code=404,
-            detail="Service not found"
-        )
-
-    logs = db.query(Log).filter(
-        Log.service_id == service_id
-    ).all()
-
-    return {
-        "service": service.url,
-        "logs": logs
-    }
-
-@router.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await manager.connect(websocket)
-    try:
-        while True:
-            await websocket.receive_text()
-    except:
-        manager.disconnect(websocket)
-from datetime import datetime, timedelta
-from sqlalchemy import func
-
-
 @router.get("/metrics")
 async def get_metrics(
     hours: int = 24,
     db: Session = Depends(get_db)
 ):
-    time_threshold = datetime.utcnow() - timedelta(hours=hours)
+    time_threshold = datetime.now(ZoneInfo("Asia/Kolkata")) - timedelta(hours=hours)
     recent_logs = db.query(Log).filter(
         Log.created_at >= time_threshold
     )
@@ -234,3 +157,29 @@ async def get_metrics(
             "success_rate_percent": success_rate
         }
     }
+
+@router.get("/services/{service_id}/logs")
+async def get_logs(
+    service_id: int,
+    limit: int = 20,
+    offset: int = 0,
+    db: Session = Depends(get_db)
+):
+
+    logs = db.query(Log).filter(
+        Log.service_id == service_id
+    ).order_by(
+        Log.created_at.desc()
+    ).offset(offset).limit(limit).all()
+
+    return logs
+
+
+@router.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+    except:
+        manager.disconnect(websocket)
