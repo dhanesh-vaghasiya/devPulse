@@ -1,12 +1,13 @@
 import httpx
 import time
+from core.config import settings
 
 async def check_url(url: str):
     start = time.time()
 
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.get(url, timeout=10)
+            response = await client.get(url, timeout=settings.REQUEST_TIMEOUT)
 
         latency = round((time.time() - start) * 1000, 2)
 

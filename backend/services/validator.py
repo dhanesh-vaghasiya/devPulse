@@ -1,5 +1,5 @@
 import httpx
-
+from core.config import settings
 
 async def validate_service_url(url: str):
 
@@ -9,7 +9,7 @@ async def validate_service_url(url: str):
 
             response = await client.get(
                 url,
-                timeout=5
+                timeout=settings.REQUEST_TIMEOUT
             )
 
         return {

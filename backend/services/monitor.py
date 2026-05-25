@@ -3,11 +3,12 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from sqlalchemy.orm import Session
 from services.cleanup import cleanup_old_logs
+from core.config import settings
 from database import SessionLocal
 from models import Alert, Service, Log
 from services.checker import check_url
+from websocket.manager import manager
 async def check_and_store(service, db):
-    from websocket_manager import manager
     result = await check_url(service.url)
     log = Log(
         service_id=service.id,
@@ -27,7 +28,7 @@ async def check_and_store(service, db):
         service.failure_count += 1
 
         # threshold crossed
-        if service.failure_count >= 3 and service.is_up:
+        if service.failure_count >= settings.FAILURE_THRESHOLD and service.is_up:
             service.is_up = False
             alert = Alert(
                 service_id=service.id,
@@ -79,9 +80,9 @@ async def monitor_services():
 
 
         cleanup_counter += 1
-        if cleanup_counter >= 120:  # every 1 hour (120 * 30 sec)
+        if cleanup_counter >= settings.RETENTION_PERIOD:  # every 1 hour (120 * 30 sec)
             await cleanup_old_logs()
             cleanup_counter = 0
 
         
-        await asyncio.sleep(30)
+        await asyncio.sleep(settings.MONITOR_INTERVAL)

@@ -2,36 +2,20 @@
 
 from zoneinfo import ZoneInfo
 from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel, HttpUrl
+from schemas.response import ServiceResponse
+from schemas.service import ServiceCreate
 from sqlalchemy.orm import Session
+from core.database import get_db
 from sqlalchemy import func
+from core.config import settings
 from datetime import datetime, timedelta
 from database import SessionLocal
 from models import Service, Log
 from services.checker import check_url
 from fastapi import WebSocket
-from websocket_manager import manager
+from websocket.manager import manager
 
 router = APIRouter()
-
-
-# ---------------- DATABASE DEPENDENCY ---------------- #
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-# ---------------- SCHEMAS ---------------- #
-
-class ServiceCreate(BaseModel):
-    url: HttpUrl
-
-
-# ---------------- ROUTES ---------------- #
 
 # Add monitored service
 @router.post("/services")
@@ -39,9 +23,7 @@ async def add_service(
     data: ServiceCreate,
     db: Session = Depends(get_db)
 ):
-
     from services.validator import validate_service_url
-
     # check duplicate
     existing = db.query(Service).filter(
         Service.url == str(data.url)
@@ -81,14 +63,14 @@ async def add_service(
 
 
 # Get all monitored services
-@router.get("/services")
+@router.get("/services", response_model=list[ServiceResponse])
 async def get_services(
     db: Session = Depends(get_db)
 ):
 
-    services = db.query(Service).all()
+    return db.query(Service).all()
 
-    return services
+    
 
 @router.get("/metrics")
 async def get_metrics(
