@@ -33,8 +33,8 @@ async def check_and_store(service, db):
             alert = Alert(
                 service_id=service.id,
                 message=f"{service.url} is DOWN",
-                created_at=datetime.now(ZoneInfo("Asia/Kolkata"))
-            )
+                created_at=datetime.utcnow())
+            
             db.add(alert)
             # ALERT EVENT
             await manager.broadcast({
@@ -46,7 +46,7 @@ async def check_and_store(service, db):
     # ---------- UPDATE CURRENT STATE ---------- #
     service.last_latency = result.get("latency")
     service.last_status_code = result.get("status_code")
-    service.last_checked = datetime.now(ZoneInfo("Asia/Kolkata"))
+    service.last_checked = datetime.utcnow()
     db.add(log)
 
     # ---------- REGULAR STATUS UPDATE ---------- #

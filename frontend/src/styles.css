@@ -288,6 +288,8 @@ tbody tr:hover,
 .alerts-panel,
 .logs-panel {
   padding-bottom: 18px;
+  max-height: 500px;
+  overflow-y: auto;
 }
 
 .empty-state {
