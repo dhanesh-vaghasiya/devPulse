@@ -14,4 +14,4 @@ class Service(Base):
     last_status_code = Column(Integer, nullable=True)
     failure_count = Column(Integer, default=0)
     last_checked = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.now(ZoneInfo("Asia/Kolkata")), index=True)
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)

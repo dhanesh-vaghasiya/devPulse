@@ -12,4 +12,4 @@ class Log(Base):
     latency = Column(Float, nullable=True)
     success = Column(Boolean)
     error = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.now(ZoneInfo("Asia/Kolkata")), index=True)
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)

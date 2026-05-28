@@ -7,9 +7,14 @@ __pycache__/
 # Virtual Environment
 venv/
 .env/
+backend/venv/
+backend/.venv/
 
 # Environment Variables
 .env
+.env.*
+frontend/.env
+frontend/.env.*
 
 # VS Code
 .vscode/
@@ -40,6 +45,8 @@ htmlcov/
 # Build
 dist/
 build/
+frontend/dist/
+frontend/node_modules/
 *.egg-info/
 
 # Uvicorn

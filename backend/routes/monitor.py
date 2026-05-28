@@ -7,12 +7,10 @@ from schemas.service import ServiceCreate
 from sqlalchemy.orm import Session
 from core.database import get_db
 from sqlalchemy import func
-from core.config import settings
 from datetime import datetime, timedelta
-from database import SessionLocal
 from models import Service, Log
-from services.checker import check_url
 from fastapi import WebSocket
+from services.validator import validate_service_url
 from websocket.manager import manager
 
 router = APIRouter()
@@ -23,7 +21,6 @@ async def add_service(
     data: ServiceCreate,
     db: Session = Depends(get_db)
 ):
-    from services.validator import validate_service_url
     # check duplicate
     existing = db.query(Service).filter(
         Service.url == str(data.url)
@@ -143,7 +140,7 @@ async def get_metrics(
 @router.get("/services/{service_id}/logs")
 async def get_logs(
     service_id: int,
-    limit: int = 20,
+    limit: int = 5,
     offset: int = 0,
     db: Session = Depends(get_db)
 ):
@@ -163,5 +160,5 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         while True:
             await websocket.receive_text()
-    except:
+    except Exception:
         manager.disconnect(websocket)
