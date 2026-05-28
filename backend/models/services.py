@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean, Float, DateTime
 from datetime import datetime
-from zoneinfo import ZoneInfo
 from core.database import Base
 
 
@@ -13,5 +12,5 @@ class Service(Base):
     last_latency = Column(Float, nullable=True)
     last_status_code = Column(Integer, nullable=True)
     failure_count = Column(Integer, default=0)
-    last_checked = Column(String, nullable=True)
+    last_checked = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, index=True)

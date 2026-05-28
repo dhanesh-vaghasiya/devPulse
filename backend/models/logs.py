@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean, Float, DateTime, ForeignKey
 from datetime import datetime
-from zoneinfo import ZoneInfo
 from core.database import Base
 
 

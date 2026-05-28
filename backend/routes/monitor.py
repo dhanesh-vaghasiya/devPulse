@@ -1,8 +1,7 @@
 # routes/monitor.py
 
-from zoneinfo import ZoneInfo
 from fastapi import APIRouter, HTTPException, Depends
-from schemas.response import ServiceResponse
+from schemas.response import ServiceResponse, MetricsResponse, LogResponse
 from schemas.service import ServiceCreate
 from sqlalchemy.orm import Session
 from core.database import get_db
@@ -69,12 +68,12 @@ async def get_services(
 
     
 
-@router.get("/metrics")
+@router.get("/metrics", response_model=MetricsResponse)
 async def get_metrics(
     hours: int = 24,
     db: Session = Depends(get_db)
 ):
-    time_threshold = datetime.now(ZoneInfo("Asia/Kolkata")) - timedelta(hours=hours)
+    time_threshold = datetime.utcnow() - timedelta(hours=hours)
     recent_logs = db.query(Log).filter(
         Log.created_at >= time_threshold
     )
@@ -137,10 +136,10 @@ async def get_metrics(
         }
     }
 
-@router.get("/services/{service_id}/logs")
+@router.get("/services/{service_id}/logs", response_model=list[LogResponse])
 async def get_logs(
     service_id: int,
-    limit: int = 5,
+    limit: int = 20,
     offset: int = 0,
     db: Session = Depends(get_db)
 ):

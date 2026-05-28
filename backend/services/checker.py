@@ -2,11 +2,14 @@ import httpx
 import time
 from core.config import settings
 
-async def check_url(url: str):
+async def check_url(url: str, client: httpx.AsyncClient | None = None):
     start = time.time()
 
     try:
-        async with httpx.AsyncClient() as client:
+        if client is None:
+            async with httpx.AsyncClient() as request_client:
+                response = await request_client.get(url, timeout=settings.REQUEST_TIMEOUT)
+        else:
             response = await client.get(url, timeout=settings.REQUEST_TIMEOUT)
 
         latency = round((time.time() - start) * 1000, 2)

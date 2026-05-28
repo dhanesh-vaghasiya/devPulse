@@ -1,11 +1,12 @@
 # main.py
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 import asyncio
 
-from database import Base, engine
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from core.config import settings
 from routes.monitor import router
 from services.monitor import monitor_services
 
@@ -22,6 +23,8 @@ async def lifespan(app: FastAPI):
 
     # shutdown
     task.cancel()
+    with suppress(asyncio.CancelledError):
+        await task
 
 
 app = FastAPI(
@@ -32,7 +35,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.ALLOWED_ORIGINS,
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
