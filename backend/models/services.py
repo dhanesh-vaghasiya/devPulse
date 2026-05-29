@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, Float, DateTime
 from datetime import datetime
+from sqlalchemy.orm import relationship
 from core.database import Base
 
 
@@ -14,3 +15,13 @@ class Service(Base):
     failure_count = Column(Integer, default=0)
     last_checked = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
+
+    logs = relationship(
+        "Log",
+        back_populates="service"
+    )
+
+    alerts = relationship(
+        "Alert",
+        back_populates="service"
+    )

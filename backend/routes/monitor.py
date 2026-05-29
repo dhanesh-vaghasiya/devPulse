@@ -63,7 +63,9 @@ async def add_service(
 async def get_services(
     db: Session = Depends(get_db)
 ):
+    service = db.query(Service).first()
 
+    print(service.logs)
     return db.query(Service).all()
 
     

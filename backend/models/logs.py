@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, Float, DateTime, ForeignKey
 from datetime import datetime
 from core.database import Base
+from sqlalchemy.orm import relationship
 
 
 class Log(Base):
@@ -12,3 +13,8 @@ class Log(Base):
     success = Column(Boolean)
     error = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
+
+    service = relationship(
+        "Service",
+        back_populates="logs"
+    )
