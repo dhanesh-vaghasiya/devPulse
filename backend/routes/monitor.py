@@ -3,7 +3,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from schemas.response import ServiceResponse, MetricsResponse, LogResponse
 from schemas.service import ServiceCreate
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from core.database import get_db
 from sqlalchemy import func
 from datetime import datetime, timedelta
@@ -63,9 +63,14 @@ async def add_service(
 async def get_services(
     db: Session = Depends(get_db)
 ):
-    service = db.query(Service).first()
-
-    print(service.logs)
+    print()
+    print("SERVICE FETCH")
+    print()
+    # print()
+    # service = (db.query(Service).options(
+    #     joinedload(Service.logs)
+    # ).all())
+    # print(service.logs)
     return db.query(Service).all()
 
     

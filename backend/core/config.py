@@ -14,7 +14,7 @@ class Settings:
         ).split(",")
         if origin.strip()
     ]
-
+    ECHO = True
     MONITOR_INTERVAL = 30
     FAILURE_THRESHOLD = 3
     REQUEST_TIMEOUT = 10

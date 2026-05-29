@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
-from database import SessionLocal
+from core.database import SessionLocal
 from models import Log
 
 async def cleanup_old_logs():

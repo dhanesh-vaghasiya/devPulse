@@ -287,6 +287,57 @@ npm run dev
 
 If `VITE_API_BASE_URL` is not set, the frontend will talk to `http://127.0.0.1:8000` by default.
 
+## Docker Setup
+
+The project can also be run using Docker Compose.
+
+### Start Services
+
+```bash
+docker compose up --build
+```
+
+This starts:
+
+- FastAPI backend container
+- PostgreSQL container
+- Shared Docker network
+- Persistent PostgreSQL volume
+
+### Apply Migrations
+
+```bash
+docker compose exec backend alembic upgrade head
+```
+
+### Stop Services
+
+```bash
+docker compose down
+```
+
+### Stop Services and Remove Database Volume
+
+```bash
+docker compose down -v
+```
+
+### Docker Architecture
+
+```text
+Docker Network
+├── backend
+└── postgres
+```
+
+The backend communicates with PostgreSQL using the service name:
+
+```env
+DATABASE_URL=postgresql+psycopg2://postgres:password@postgres:5432/devpulse
+```
+
+Inside Docker, `localhost` refers to the container itself, so service-to-service communication uses Docker service names instead.
+
 ## Alembic Migration Commands
 
 Common migration commands used in this project:

@@ -4,50 +4,34 @@ __pycache__/
 *.pyo
 *.pyd
 
-# Virtual Environment
+# Virtual Environments
 venv/
-.env/
-backend/venv/
-backend/.venv/
+.venv/
+env/
 
 # Environment Variables
 .env
-.env.*
-frontend/.env
-frontend/.env.*
 
-# VS Code
+# PostgreSQL
+*.db
+
+# Alembic
+alembic/versions/__pycache__/
+
+# Node
+node_modules/
+
+# Build Outputs
+dist/
+build/
+
+# IDE
 .vscode/
-
-# PyCharm
 .idea/
 
-# Database / Logs
-*.log
-
-# pytest
-.pytest_cache/
-
-# mypy
-.mypy_cache/
-
-# OS Files
+# OS
 .DS_Store
 Thumbs.db
 
-# Alembic
-alembic/versions/*.pyc
-
-# Coverage
-.coverage
-htmlcov/
-
-# Build
-dist/
-build/
-frontend/dist/
-frontend/node_modules/
-*.egg-info/
-
-# Uvicorn
-uvicorn.log
+# Docker
+*.log

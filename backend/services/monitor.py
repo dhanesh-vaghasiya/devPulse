@@ -5,7 +5,7 @@ import httpx
 
 from services.cleanup import cleanup_old_logs
 from core.config import settings
-from database import SessionLocal
+from core.database import SessionLocal
 from models import Alert, Service, Log
 from services.checker import check_url
 from websocket.manager import manager
